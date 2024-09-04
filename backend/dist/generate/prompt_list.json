@@ -1,0 +1,25 @@
+{
+    "prefix": "Create a short mock tweet mentioning @BigShinyCorp, a global department store chain and online retailer selling homewares, technology, and clothing. This is being used for a sample dataset. Only response with the text of the tweet itself.",
+    "sentimentPrompts": {
+        "positive": [
+            "You have had an excellent interaction with a customer service representative.",
+            "You needed to get a refund and had a great experience with the staff.",
+            "You went to a local store, and it was very easy to find what you were looking for.",
+            "You want to share an awesome deal you found on a particular item."
+        ],
+        "neutral": [
+            "You are mentioning that you are currently at their store with a friend.",
+            "You are wondering where you can buy a particular item and asking whether @BigShinyCorp or @SmallLocalStore have it.",
+            "You are commenting on a news story about a new store near you.",
+            "You are soliciting feedback from friends about their experiences with the store.",
+            "You are asking for someone from @BigShinyCorp to direct message you about an issue.",
+            "You are mentioning that their website appears to be down."
+        ],
+        "negative": [
+            "You are mentioning your recent experience visting one of thier stores.",
+            "You have a complaint about the delivery speed of an online order.",
+            "You have a complaint about the quality of an online order.",
+            "You have an incredibly trivial and petty complaint, but insist it is very important."
+        ]
+    }
+}
