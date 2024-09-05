@@ -9,9 +9,10 @@ const usernamesStore = JSON.parse(
 )
 
 type PostResponse = {
+  created_at: number;
+  id: string,
   message: string;
   author: string;
-  timestamp: number;
   lang: string;
 }
 
@@ -21,9 +22,10 @@ function getRandomPost(langCode: string = "en"): PostResponse {
   const postTimestamp = new Date(Date.now() - Math.random() * 60000);
 
   return {
+    id: crypto.randomUUID(),
+    created_at: postTimestamp.getTime(),
     message: postContents,
     author: postUsername,
-    timestamp: postTimestamp.getTime(),
     lang: langCode,
   };
 }
@@ -51,7 +53,7 @@ function getPostStream(count: number = 20) {
     posts.push(post);
   }
 
-  posts.sort((a, b) => a.timestamp - b.timestamp);
+  posts.sort((a, b) => a.created_at - b.created_at);
 
   return posts;
 }
