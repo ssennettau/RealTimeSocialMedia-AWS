@@ -34,19 +34,16 @@ function getPostStream(count: number = 20) {
   const posts: PostResponse[] = [];
   for (let i = 0; i < count; i++) {
     const langWeights = {
-      "en": 0.75,
-      "fr": 0.1,
-      "es": 0.1,
-      "pa": 0.05,
+      "en": 0.9,
+      "fr": 0.94,
+      "es": 0.98,
+      "pa": 1.00,
     };
 
-    const langCode = Math.random() < langWeights["en"]
-      ? "en"
-      : Math.random() < langWeights["fr"]
-        ? "fr"
-        : Math.random() < langWeights["es"]
-          ? "es"
-          : "pa";
+    const randomValue = Math.random();
+    const langCode = randomValue < langWeights["en"] ? "en"
+      : randomValue < langWeights["fr"] ? "fr"
+        : randomValue < langWeights["es"] ? "es" : "pa";
 
     const post = getRandomPost(langCode);
 
