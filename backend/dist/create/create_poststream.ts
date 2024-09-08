@@ -8,12 +8,36 @@ const usernamesStore = JSON.parse(
   readFileSync("./usernames.json", "utf-8")
 )
 
+type PostDate = {
+  epochTime: number;
+  year: string;
+  month: string;
+  day: string;
+  hour: string;
+  minute: string;
+  second: string;
+  millisecond: string;
+};
+
 type PostResponse = {
-  created_at: number;
   id: string,
+  dateTime: PostDate;
   message: string;
   author: string;
   lang: string;
+};
+
+function convertDateToPostDate(date: Date): PostDate {
+  return {
+    epochTime: date.getTime(),
+    year: String(date.getFullYear()).padStart(4, '0'),
+    month: String(date.getMonth() + 1).padStart(2, '0'),
+    day: String(date.getDate()).padStart(2, '0'),
+    hour: String(date.getHours()).padStart(2, '0'),
+    minute: String(date.getMinutes()).padStart(2, '0'),
+    second: String(date.getSeconds()).padStart(2, '0'),
+    millisecond: String(date.getMilliseconds()).padStart(3, '0'),
+  };
 }
 
 function getRandomPost(langCode: string = "en"): PostResponse {
@@ -23,7 +47,7 @@ function getRandomPost(langCode: string = "en"): PostResponse {
 
   return {
     id: crypto.randomUUID(),
-    created_at: postTimestamp.getTime(),
+    dateTime: convertDateToPostDate(postTimestamp),
     message: postContents,
     author: postUsername,
     lang: langCode,
@@ -50,7 +74,7 @@ function getPostStream(count: number = 20) {
     posts.push(post);
   }
 
-  posts.sort((a, b) => a.created_at - b.created_at);
+  posts.sort((a, b) => a.dateTime.epochTime - b.dateTime.epochTime);
 
   return posts;
 }
