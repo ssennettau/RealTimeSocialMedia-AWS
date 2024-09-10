@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Lab Artifacts for the 'Real-Time Social Media Sentiment Analysis with Serverless Generative AI' workshop by @ssennettau"
+
+Resources:
+  LambdaIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: "lambda-execution-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "CloudWatchLogs"
+                Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+              - Sid: "KinesisDataStreams"
+                Effect: "Allow"
+                Action:
+                  - "kinesis:*"
+                Resource: "*"
+              - Sid: "StepFunctions"
+                Effect: "Allow"
+                Action:
+                  - "states:StartExecution"
+                Resource: "*"
+              - Sid: "DynamoDb"
+                Effect: "Allow"
+                Action:
+                  - "dynamodb:Query"
+                Resource: "*"
+              - Sid: "Bedrock"
+                Effect: "Allow"
+                Action:
+                  - "bedrock:InvokeModel"
+                Resource: "*"
+              - Sid: "Sns"
+                Effect: "Allow"
+                Action:
+                  - "sns:Publish"
+                Resource: "*"
+  StepFunctionsIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "states.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: "step-functions-execution-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "DynamoDb"
+                Effect: "Allow"
+                Action:
+                  - "dynamodb:PutItem"
+                Resource: "*"
+              - Sid: "XRay"
+                Effect: "Allow"
+                Action:
+                  - "xray:PutTraceSegments"
+                  - "xray:PutTelemetryRecords"
+                Resource: "*"
+              - Sid: "Comprehend"
+                Effect: "Allow"
+                Action:
+                  - "comprehend:DetectSentiment"
+                Resource: "*"
+              - Sid: "Translate"
+                Effect: "Allow"
+                Action:
+                  - "translate:TranslateText"
+                Resource: "*"
+  RetrievePostsLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: "ssennett-lab-persistent"
+        S3Key: "2024/realtimesocialmedianalysis/retrieve_posts.zip"
+      Handler: "index.handler"
+      Role: !GetAtt LambdaIAMRole.Arn
+      Runtime: "nodejs20.x"
+      Timeout: 15
+  RetrievePostsLambdaTrigger:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "rate(1 minute)"
+      State: DISABLED
+      Targets:
+        - Arn: !GetAtt RetrievePostsLambdaFunction.Arn
+          Id: RetrievePostsLambdaFunction
+  RetrievePostsLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt RetrievePostsLambdaFunction.Arn
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt RetrievePostsLambdaTrigger.Arn
+  IngestDataLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: "ssennett-lab-persistent"
+        S3Key: "2024/realtimesocialmedianalysis/ingest_data.zip"
+      Handler: "index.handler"
+      Role: !GetAtt LambdaIAMRole.Arn
+      Runtime: "nodejs20.x"
+      Timeout: 15
+  RunReportLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: "ssennett-lab-persistent"
+        S3Key: "2024/realtimesocialmedianalysis/run_report.zip"
+      Handler: "index.handler"
+      Role: !GetAtt LambdaIAMRole.Arn
+      Runtime: "nodejs20.x"
+      Timeout: 15

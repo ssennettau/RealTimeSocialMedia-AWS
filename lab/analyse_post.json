@@ -1,0 +1,87 @@
+{
+  "Comment": "Social Media Post Analysis Function",
+  "StartAt": "Add CreationDate Value",
+  "States": {
+    "Add CreationDate Value": {
+      "Type": "Pass",
+      "Parameters": {
+        "id.$": "$.id",
+        "creationDate.$": "States.Format('{}-{}-{}', $.dateTime.year, $.dateTime.month, $.dateTime.day)",
+        "epochTimestamp.$": "$.dateTime.epochTime",
+        "message.$": "$.message",
+        "author.$": "$.author",
+        "lang.$": "$.lang"
+      },
+      "Next": "Requires Translation?"
+    },
+    "Requires Translation?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Not": {
+            "Variable": "$.lang",
+            "StringEquals": "en"
+          },
+          "Next": "TranslateText",
+          "Comment": "Translate"
+        }
+      ],
+      "Default": "DetectSentiment"
+    },
+    "TranslateText": {
+      "Type": "Task",
+      "Parameters": {
+        "SourceLanguageCode.$": "$.lang",
+        "TargetLanguageCode": "en",
+        "Text.$": "$.message"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:translate:translateText",
+      "Next": "Rebuild Message Object",
+      "ResultPath": "$.Translation"
+    },
+    "Rebuild Message Object": {
+      "Type": "Pass",
+      "Next": "DetectSentiment",
+      "Parameters": {
+        "id.$": "$.id",
+        "epochTimestamp.$": "$.epochTimestamp",
+        "creationDate.$": "$.creationDate",
+        "message.$": "$.Translation.TranslatedText",
+        "author.$": "$.author",
+        "lang.$": "$.lang"
+      }
+    },
+    "DetectSentiment": {
+      "Type": "Task",
+      "Parameters": {
+        "LanguageCode": "en",
+        "Text.$": "$.message"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSentiment",
+      "ResultPath": "$.SentimentAnalysis",
+      "Next": "DynamoDB PutItem"
+    },
+    "DynamoDB PutItem": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "social-sentiment-db",
+        "Item": {
+          "CreationDate": {
+            "S.$": "States.Format('{}',$.creationDate)"
+          },
+          "EpochTimestamp": {
+            "N.$": "States.Format('{}',$.epochTimestamp)"
+          },
+          "Message": {
+            "S.$": "$.message"
+          },
+          "Sentiment": {
+            "S.$": "$.SentimentAnalysis.Sentiment"
+          }
+        }
+      },
+      "End": true
+    }
+  }
+}
