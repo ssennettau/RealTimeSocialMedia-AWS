@@ -6,9 +6,19 @@ The Lambda Function is triggered by a HTTP API. Flat files contain pre-generated
 
 ```json
 {
-    "message": "Just had an amazing experience with @BigShinyCorp's customer support. They went above and beyond to resolve my issue quickly and professionally. Highly recommend shopping with them!",
-    "author": "@JohnDoe92",
-    "timestamp": 1725462582511,
+    "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "dateTime": {
+        "epochTime": 1704067200000,
+        "year": "2024",
+        "month": "01",
+        "day": "01",
+        "hour": "00",
+        "minute": "00",
+        "second": "00",
+        "millisecond": "000"
+    },
+    "message": "@BigShinyCorp is the bees knees in pretend megacorporations. Absolutely tippy-top spot-on! 1000/10 would post again",
+    "author": "@TestPoster1337",
     "lang": "en"
 }
 ```
