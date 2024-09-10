@@ -4,6 +4,10 @@ In this hands-on workshop, you'll dive into the world of real-time data processi
 
 No coding is required—just bring your laptop and an AWS account. Whether you're new to serverless or AI, we’ve got you covered. We’ll provide a high-level overview of the architecture and walk you through the steps to deploy and experiment with it yourself. This workshop is perfect for anyone looking to get hands-on experience with real-time data processing and AI on the cloud.
 
+## Instructions
+
+Check out the [Workshop Instructions](INSTRUCTIONS.md) to get started.
+
 ## License
 
 This workshop and its materials are licensed under the [MIT License](LICENSE). Intended for educational use only.
