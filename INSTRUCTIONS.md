@@ -85,7 +85,7 @@ You have now created the DynamoDB table that will store your analysed posts.
 9. Drag the **DetectSentiment** state into the canvas, directly below **Add CreationDate Value**.
 
 10. In the **API Parameters**, change the following details:
-    * Set the `LangCode` to `en`.
+    * Set the `LanguageCode` to `en`.
     * Modify the `Text` key into `Text.$`
     * Set the value of `Text.$` to `$.message`
 
